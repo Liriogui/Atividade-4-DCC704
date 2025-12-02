@@ -1,23 +1,29 @@
-require('dotenv').config();
-const helmet = require('helmet');
-const csrf = require('csurf');
-const rateLimit = require('express-rate-limit');
+const express = require("express");
+const mongoose = require("mongoose");
+const session = require("express-session");
+const userRoutes = require("./src/routes/userRoutes");
 
-// antes das rotas
-app.use(helmet());
+const app = express();
 
-// proteção CSRF
-app.use(csrf());
+// Configuração do Express
+app.set("view engine", "ejs");
+app.use(express.urlencoded({ extended: true }));
 
-// token CSRF para views
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
+// Sessões
+app.use(
+  session({
+    secret: "chave_super_secreta",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 
-// Rate limiting na rota de login
-const loginLimiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 5,
-  message: "Muitas tentativas. Aguarde 1 minuto."
-});
+// Conexão com o MongoDB
+mongoose
+  .connect("mongodb://localhost:27017/aula18", {})
+  .then(() => console.log("MongoDB conectado."))
+  .catch((err) => console.log("Erro na conexão: ", err));
+
+app.use("/", userRoutes);
+
+app.listen(3000, () => console.log("Servidor rodando na porta 3000"));
