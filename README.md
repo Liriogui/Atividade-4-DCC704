@@ -17,10 +17,3 @@ Implementar proteções arquiteturais contra:
 O projeto parte da versão final da Aula 18.
 
 ---
-
-# ✅ 1. SQL Injection (SQLi)
-**Mitigação:** uso de *queries parametrizadas* do Mongoose.  
-Não há concatenação manual de strings. Exemplo:
-
-```js
-User.findOne({ email: req.body.email })
